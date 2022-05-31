@@ -8,7 +8,7 @@ then
 fi
 
 echo Creating new Arch Linux root filesystem...
-mkarchroot ./arch-fs linux bash coreutils vi vim sed pacman sudo git	# create new arch root filesystem at ./arch-fs
+mkarchroot ./arch-fs linux bash coreutils vi vim pacman sudo curl	# create new arch root filesystem at ./arch-fs
 echo Finished creating new Arch Linux root filesystem!
 echo
 echo Done!
