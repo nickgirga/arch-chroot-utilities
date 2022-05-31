@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/env bash
 
 echo Deleting lock file...
 [ -f ./arch-fs.lock ] && sudo rm -f ./arch-fs.lock || echo WARNING!: Lock file does not exist!
