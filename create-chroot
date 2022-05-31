@@ -1,0 +1,14 @@
+#!/usr/bin/zsh
+
+if [ -d ./arch-fs ];
+then
+	echo ERROR!: The root filesystem for the Arch Linux chroot already exists.
+	echo Use \`./start-chroot\` to start the chroot or \`./delete-chroot\` to delete it.
+	exit
+fi
+
+echo Creating new Arch Linux root filesystem...
+mkarchroot ./arch-fs linux bash coreutils vi vim sed pacman sudo git	# create new arch root filesystem at ./arch-fs
+echo Finished creating new Arch Linux root filesystem!
+echo
+echo Done!
