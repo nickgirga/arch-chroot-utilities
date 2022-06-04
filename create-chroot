@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# these are the only packages that will be installed in the chroot
+PACKAGES='linux bash coreutils vi vim perl pacman sudo curl'
+
 if [ -d ./arch-fs ];
 then
 	echo ERROR!: The root filesystem for the Arch Linux chroot already exists.
@@ -8,7 +11,7 @@ then
 fi
 
 echo Creating new Arch Linux root filesystem...
-mkarchroot ./arch-fs linux bash coreutils vi vim pacman sudo curl	# create new arch root filesystem at ./arch-fs
+mkarchroot ./arch-fs $PACKAGES	# create new arch root filesystem at ./arch-fs
 echo Finished creating new Arch Linux root filesystem!
 echo
 echo Done!
