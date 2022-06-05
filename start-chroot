@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# check if filesystem exists
 if ! [ -d ./arch-fs ];
 then
 	echo ERROR!: The root filesystem for the Arch Linux chroot does not exist.
@@ -7,14 +8,19 @@ then
 	exit
 fi
 
+# mount filesystem
 echo Mounting root filesystem for Arch Linux chroot...
 sudo mount --bind ./arch-fs ./arch-fs	# mount ./arch-fs
 echo Finished mounting root filesystem for Arch Linux chroot!
 echo
+
+# start chroot
 echo Starting Arch Linux chroot...
 sudo arch-chroot ./arch-fs		# chroot ./arch-fs
 echo Arch Linux chroot exited!
 echo
+
+# unmount filesystem after chroot has been exited
 echo Unmounting root filesystem for Arch Linux chroot...
 sudo umount ./arch-fs			# unmount ./arch-fs
 echo Finished unmounting root filesystem for Arch Linux chroot!

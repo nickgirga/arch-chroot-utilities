@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+# do not allow user to delete mounted directories
 mountpoint -q ./arch-fs && { echo ERROR\!: Chroot is mounted.; echo If you are positive it is no longer in use, unmount using the \`umount\` command.; echo Type \`man umount\` and press ENTER for more information.; exit; }
 
+# delete lock file
 echo Deleting lock file...
 [ -f ./arch-fs.lock ] && sudo rm -f ./arch-fs.lock || echo WARNING!: Lock file does not exist!
 echo Finished deleting lock file!
 echo
 
+# check if filesystem directory exists
 if ! [ -d ./arch-fs ];
 then
 	echo ERROR!: The root filesystem for the Arch Linux chroot does not exist. 
@@ -14,6 +17,7 @@ then
 	exit
 fi
 
+# delete filesystem
 echo Deleting root filesystem for Arch Linux chroot...
 echo
 for child in ./arch-fs/*;
