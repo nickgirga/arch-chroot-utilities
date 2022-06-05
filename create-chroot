@@ -11,16 +11,25 @@ then
 	exit
 fi
 
-# install devtools if `mkarchroot` cannot be run
-if ! [ `command -v "mkarchroot"` ];
+# install `devtools` if `mkarchroot` cannot be run
+check_command="mkarchroot" # the command to evaluate
+check_package="devtools" # the package the command belongs to
+if ! [ `command -v "$check_command"` ];
 then
-	echo \`mkarchroot\` could not be found!
-	echo Installing \`devtools\` using pacman...
+	echo \`$check_command\` could not be found!
+	echo Installing \`$check_package\` using pacman...
 	echo
-	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed devtools; else sudo pacman -Sy --noconfirm --needed devtools; fi
+	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed "$check_package"; else sudo pacman -Sy --noconfirm --needed "$check_package"; fi
 	echo
 	echo Finished installing \`devtools\`!
 	echo
+fi
+
+# ensure `mkarchroot` will actually run
+if ! [ `command -v "$check_command"` ];
+then
+	echo ERROR!: \`$check_command\` could not be installed!
+	exit
 fi
 
 # use mkarchroot to create a root filesystem
