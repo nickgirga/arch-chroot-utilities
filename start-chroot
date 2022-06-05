@@ -95,7 +95,7 @@ then
 fi
 
 # start chroot using `arch-chroot`
-echo Starting Arch Linux chroot...
+mountpoint -q "./arch-fs" && echo Starting Arch Linux chroot... || { echo ERROR!: Arch Linux filesystem could not be mounted.; exit; }
 sudo arch-chroot ./arch-fs
 echo Arch Linux chroot exited!
 echo
