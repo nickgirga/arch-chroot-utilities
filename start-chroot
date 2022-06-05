@@ -8,40 +8,84 @@ then
 	exit
 fi
 
-# install devtools if `arch-chroot` cannot be run
-if ! [ `command -v "arch-chroot"` ];
+# install `util-linux` if `mount` cannot be run
+check_command="mount" # the command to evaluate
+check_package="util-linux" # the package the command belongs to
+if ! [ `command -v "$check_command"` ];
 then
-	echo \`arch-chroot\` could not be found!
-	echo Installing \`devtools\` using pacman...
+	echo \`$check_command\` could not be found!
+	echo Installing \`$check_package\` using pacman...
 	echo
-	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed devtools; else sudo pacman -Sy --noconfirm --needed devtools; fi
+	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed "$check_package"; else sudo pacman -Sy --noconfirm --needed "$check_package"; fi
 	echo
 	echo Finished installing \`devtools\`!
 	echo
 fi
 
-# ensure `arch-chroot` will actually run before mounting the filesystem
-if ! [ `command -v "arch-chroot"` ];
+# ensure `mount` will actually run
+if ! [ `command -v "$check_command"` ];
 then
-	echo ERROR!: \`arch-chroot\` could not be installed!
+	echo ERROR!: \`$check_command\` could not be installed!
+	exit
+fi
+
+# install `util-linux` if `umount` cannot be run
+check_command="umount" # the command to evaluate
+check_package="util-linux" # the package the command belongs to
+if ! [ `command -v "$check_command"` ];
+then
+	echo \`$check_command\` could not be found!
+	echo Installing \`$check_package\` using pacman...
+	echo
+	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed "$check_package"; else sudo pacman -Sy --noconfirm --needed "$check_package"; fi
+	echo
+	echo Finished installing \`devtools\`!
+	echo
+fi
+
+# ensure `umount` will actually run
+if ! [ `command -v "$check_command"` ];
+then
+	echo ERROR!: \`$check_command\` could not be installed!
 	exit
 fi
 
 # mount filesystem
 echo Mounting root filesystem for Arch Linux chroot...
-sudo mount --bind ./arch-fs ./arch-fs	# mount ./arch-fs
+sudo mount --bind ./arch-fs ./arch-fs
 echo Finished mounting root filesystem for Arch Linux chroot!
 echo
 
-# start chroot
+# install `devtools` if `arch-chroot` cannot be run
+check_command="arch_chroot" # the command to evaluate
+check_package="devtools" # the package the command belogns to
+if ! [ `command -v "$check_command"` ];
+then
+	echo \`$check_command\` could not be found!
+	echo Installing \`$check_package\` using pacman...
+	echo
+	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed "$check_package"; else sudo pacman -Sy --noconfirm --needed "$check_package"; fi
+	echo
+	echo Finished installing \`devtools\`!
+	echo
+fi
+
+# ensure `arch-chroot` will actually run
+if ! [ `command -v "$check_command"` ];
+then
+	echo ERROR!: \`$check_command\` could not be installed!
+	exit
+fi
+
+# start chroot using `arch-chroot`
 echo Starting Arch Linux chroot...
-sudo arch-chroot ./arch-fs		# chroot ./arch-fs
+sudo arch-chroot ./arch-fs
 echo Arch Linux chroot exited!
 echo
 
 # unmount filesystem after chroot has been exited
 echo Unmounting root filesystem for Arch Linux chroot...
-sudo umount ./arch-fs			# unmount ./arch-fs
+sudo umount ./arch-fs
 echo Finished unmounting root filesystem for Arch Linux chroot!
 echo
 echo Done!
