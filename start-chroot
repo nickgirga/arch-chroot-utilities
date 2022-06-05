@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# File: start-chroot
+# Author: Nicholas Girga
+# Purpose: Use `arch-chroot` on a filesystem created with `create-chroot`.
 
 # define mounting function
 mount_arch_fs() {

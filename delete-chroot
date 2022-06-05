@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# File: delete-chroot
+# Author: Nicholas Girga
+# Purpose: Delete a filesystem created by `create-chroot`.
 
 # do not allow user to delete mounted directories
 mountpoint -q ./arch-fs && { echo ERROR\!: Chroot is mounted.; echo If you are positive it is no longer in use, unmount using the \`umount\` command.; echo Type \`man umount\` and press ENTER for more information.; exit; }

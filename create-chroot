@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# File: create-chroot
+# Author: Nicholas Girga
+# Purpose: Create a filesystem to be used by chroot or similar utilities.
 
 # these are the only packages that will be installed in the chroot
 PACKAGES='linux bash coreutils vi vim perl pacman sudo curl'
