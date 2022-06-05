@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# define mounting function
+mount_arch_fs() {
+	echo Mounting root filesystem for Arch Linux chroot...
+	sudo mount --bind ./arch-fs ./arch-fs
+	echo Finished mounting root filesystem for Arch Linux chroot!
+}
+
+# define umounting function
+unmount_arch_fs() {
+	echo Unmounting root filesystem for Arch Linux chroot...
+	sudo umount ./arch-fs
+	echo Finished unmounting root filesystem for Arch Linux chroot!
+}
+
 # check if filesystem exists
 if ! [ -d ./arch-fs ];
 then
@@ -51,9 +65,7 @@ then
 fi
 
 # mount filesystem
-echo Mounting root filesystem for Arch Linux chroot...
-sudo mount --bind ./arch-fs ./arch-fs
-echo Finished mounting root filesystem for Arch Linux chroot!
+mount_arch_fs
 echo
 
 # install `devtools` if `arch-chroot` cannot be run
@@ -74,6 +86,8 @@ fi
 if ! [ `command -v "$check_command"` ];
 then
 	echo ERROR!: \`$check_command\` could not be installed!
+	echo
+	unmount_arch_fs # unmount before exiting
 	exit
 fi
 
@@ -84,8 +98,6 @@ echo Arch Linux chroot exited!
 echo
 
 # unmount filesystem after chroot has been exited
-echo Unmounting root filesystem for Arch Linux chroot...
-sudo umount ./arch-fs
-echo Finished unmounting root filesystem for Arch Linux chroot!
+unmount_arch_fs
 echo
 echo Done!
