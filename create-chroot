@@ -3,6 +3,7 @@
 # these are the only packages that will be installed in the chroot
 PACKAGES='linux bash coreutils vi vim perl pacman sudo curl'
 
+# do not allow creation if filesystem directory already exists
 if [ -d ./arch-fs ];
 then
 	echo ERROR!: The root filesystem for the Arch Linux chroot already exists.
@@ -10,6 +11,19 @@ then
 	exit
 fi
 
+# install devtools if `mkarchroot` cannot be run
+if ! [ `command -v "mkarchroot"` ];
+then
+	echo \`mkarchroot\` could not be found!
+	echo Installing \`devtools\` using pacman...
+	echo
+	if [ "$EUID" == "0" ]; then pacman -Sy --noconfirm --needed devtools; else sudo pacman -Sy --noconfirm --needed devtools; fi
+	echo
+	echo Finished installing \`devtools\`!
+	echo
+fi
+
+# use mkarchroot to create a root filesystem
 echo Creating new Arch Linux root filesystem...
 mkarchroot ./arch-fs $PACKAGES	# create new arch root filesystem at ./arch-fs
 echo Finished creating new Arch Linux root filesystem!
