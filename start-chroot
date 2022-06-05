@@ -69,7 +69,7 @@ mount_arch_fs
 echo
 
 # install `devtools` if `arch-chroot` cannot be run
-check_command="arch_chroot" # the command to evaluate
+check_command="arch-chroot" # the command to evaluate
 check_package="devtools" # the package the command belogns to
 if ! [ `command -v "$check_command"` ];
 then
