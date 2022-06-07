@@ -36,7 +36,7 @@ def print_help():
     print("\nOptions [options...]:")
     print("  -h, --help\t\tPrints help text.")
     print("  -v, --verbose\t\tEnables verbose mode.")
-    print("  -F\t\t\tOverwrites files and directories at [path].")
+    print("  --force\t\tOverwrites files and directories at [path].")
     print("  -p=[packages]\t\tInstalls [packages] to the chroot.")
     print("  --packages=[packages]\t(Does the same as `-p`).")
     print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.")
@@ -51,8 +51,15 @@ depchecker.check_dependencies({
 # Check launch options.
 args = sys.argv[1:]
 for arg in args:
+    if not path == "":
+        print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                "Options must come before path.\n" +
+                "Use `create-chroot --help` for more information.")
+        sys.exit(6) # path before arguments; exit with code 6
+
     if len(arg) > 0:
         if arg[0] == '-':
+            # is an option
             if len(arg) > 1:
                 if arg[1] == '-':
                     # is double dash (word) option (e.g. `--help`)
@@ -63,8 +70,23 @@ for arg in args:
                         print("WARNING!: Verbose mode is enabled! Extra information will be given.")
                         verbose = True # enable verbose mode
                     elif arg == "--force":
-                        print("WARNING!: Force deletion is enabled! Files and directories at the filesystem's path will be overwritten!")
+                        print(  "WARNING!: Force deletion is enabled!\n" +
+                                "Files and directories at the filesystem's path will be overwritten!")
                         force_delete = True # enable force deletion
+                    elif arg[:10] == "--packages":
+                        if len(arg) > 10:
+                            if arg[10] == '=':
+                                packages = arg[11:]
+                            else:
+                                print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                                        "Expected \"=\", but got \"" + arg[10] + "\"!\n" +
+                                        "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                sys.exit(7) # invalid package syntax; exit with code 7
+                        else:
+                            print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                                    "The `--packages` option expects a variable.\n" +
+                                    "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                            sys.exit(7) # invalid package syntax; exit with code 7
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
                                 "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
@@ -75,9 +97,24 @@ for arg in args:
                         if char == 'h':
                             print_help() # help
                             sys.exit(0)
-                        if char == 'v':
+                        elif char == 'v':
                             print("WARNING!: Verbose mode is enabled! Extra information will be given.")
                             verbose = True # enable verbose mode
+                        elif char == 'p':
+                            if len(arg) > 2:
+                                if arg[2] == '=':
+                                    packages = arg[3:] # set packages
+                                    break # stop reading this group of options if it contains a package list
+                                else:
+                                    print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                                            "Expected \"=\", but got \"" + arg[2] + "\"!\n" +
+                                            "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                    sys.exit(7) # invalid package syntax; exit with code 7
+                            else:
+                                print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                                        "The `-p` option expects a variable.\n" +
+                                        "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                sys.exit(7) # invalid package syntax; exit with code 7
                         else:
                             print(  "ERROR!: Invalid option (-" + char + ")!\n" +
                                     "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
@@ -86,6 +123,9 @@ for arg in args:
                 print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                         "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
                 sys.exit(2) # invalid syntax (-); exit with code 2
+        else:
+            # is a path
+            path = arg
     else:
         print("ERROR!: Option has invalid character length (" + arg + ")!", ' ', '\n', sys.stderr)
         sys.exit(3) # invalid launch option character length; exit with code 3
@@ -98,13 +138,20 @@ if path == "":
         print("WARNING!: No path specified! Using default path (" + new_path + ")!")
     path = new_path
 
+# Print current path (verbose).
+if verbose:
+    print("Path: \"" + path + "\"")
 
 # Set default packages if needed.
 if packages == "":
     if verbose:
         print("WARNING!: No packages specified! Using default packages!")
-        print("Package list: [ " + ", ".join(DEFAULT_PACKAGES.split(' ')) + " ]")
     packages = DEFAULT_PACKAGES
+
+
+# Print current package list (verbose).
+if verbose:
+    print("Package list: [ " + ", ".join(packages.split(' ')) + " ]")
 
 
 # Do not allow creation if filesystem directory already exists.
