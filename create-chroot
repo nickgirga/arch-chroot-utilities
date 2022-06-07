@@ -12,7 +12,7 @@ import os, sys, subprocess
 # The packages to install in a chroot by default.
 # Represented by a string separated by spaces.
 # For example: "linux bash coreutils"
-DEFAULT_PACKAGES = "linux bash coreutils vi vim perl pacman sudo curl"
+DEFAULT_PACKAGES = "linux bash coreutils sed vi vim perl pacman sudo curl"
 
 
 # The path to this chroot.
@@ -25,6 +25,9 @@ packages = ""
 
 # If extra information should be printed.
 verbose = False
+
+# If files and directories at the path should be deleted.
+force_delete = False
 
 
 # Prints help text.
@@ -59,6 +62,9 @@ for arg in args:
                     elif arg == "--verbose":
                         print("WARNING!: Verbose mode is enabled! Extra information will be given.")
                         verbose = True # enable verbose mode
+                    elif arg == "--force":
+                        print("WARNING!: Force deletion is enabled! Files and directories at the filesystem's path will be overwritten!")
+                        force_delete = True # enable force deletion
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
                                 "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
@@ -88,14 +94,14 @@ for arg in args:
 # Set default path if needed.
 if path == "":
     new_path = os.getcwd() + "/arch-fs"
-    if True:
+    if verbose:
         print("WARNING!: No path specified! Using default path (" + new_path + ")!")
     path = new_path
 
 
 # Set default packages if needed.
 if packages == "":
-    if True:
+    if verbose:
         print("WARNING!: No packages specified! Using default packages!")
         print("Package list: [ " + ", ".join(DEFAULT_PACKAGES.split(' ')) + " ]")
     packages = DEFAULT_PACKAGES
@@ -105,9 +111,24 @@ if packages == "":
 is_file = os.path.isfile(path)
 is_dir = os.path.isdir(path)
 if is_file or is_dir:
-    print("ERROR!: The root filesystem for the Arch Linux chroot already exists.")
-    print("Use \`./start-chroot\` to start the chroot or \`./delete-chroot\` to delete it.")
-    sys.exit()
+    if not force_delete:
+        print(  "ERROR!: " + ("File" if is_file else "Directory") + " exists at path (" + path + ")!\n" +
+                "Use the `--force` option to delete it before creation.")
+        sys.exit(4) # file or directory exists at path; exit with code 4
+
+    print("WARNING!: Overwriting " + ("file" if is_file else "directory") + " at path!")
+
+    if verbose:
+        print("Deleting " + ("file" if is_file else "directory") + " at path (" + path + ")...")
+    
+    try:
+        subprocess.run(["./delete-chroot", path], capture_output = not verbose) # overwrite
+    except Exception as e:
+        print(str(e) + "\nERROR!: Something happened while trying to delete the Arch Linux chroot filesystem!")
+        sys.exit(5) # failed to delete chroot filesystem; exit with code 5
+
+    if verbose:
+        print("Finished deleting " + ("file" if is_file else "directory") + " at path (" + path + ")!")
 
 
 # get package list
@@ -116,5 +137,8 @@ package_list = packages.split(' ')
 
 # use mkarchroot to create a root filesystem
 print("Creating new Arch Linux root filesystem...")
-subprocess.run(["mkarchroot", path] + package_list) # create new arch root filesystem at ./arch-fs
+output = subprocess.run(["mkarchroot", path] + package_list, capture_output = not verbose) # create new arch root filesystem at ./arch-fs
+if not output.returncode == 0:
+    print(  "WARNING!: Returned with non-zero error code (" + str(output.returncode) + ")!\n" +
+            "If problems occur, try recreating the filesystem with the `-v` option for more information.")
 print("Finished creating new Arch Linux root filesystem!\n\nDone!\n")
