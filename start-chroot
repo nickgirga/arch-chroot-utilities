@@ -78,7 +78,8 @@ depchecker.check_dependencies({
     "mount": { depchecker.SystemInfo.DEFAULT: "util-linux" },                       # check for `mount`
     "mountpoint": { depchecker.SystemInfo.DEFAULT: "util-linux" },                  # check for `mountpoint`
     "arch-chroot": { depchecker.SystemInfo.ARCH_LINUX: "arch-install-scripts" },    # check for `arch-chroot`
-    "umount": { depchecker.SystemInfo.DEFAULT: "util-linux" }                       # check for `umount`
+    "umount": { depchecker.SystemInfo.DEFAULT: "util-linux" },                      # check for `umount`
+    "sudo": { depchecker.SystemInfo.DEFAULT: "sudo" }                               # check for `sudo`
 }, verbose)
 
 
