@@ -117,7 +117,7 @@ if os.path.isfile(lock_file):
     lock_file_existed = True
 
     if verbose:
-        print("Deleting lock file...")
+        print("Deleting lock file (" + lock_file + ")...")
 
     lock_file_rm_cmd = ["rm", "-f", lock_file]
     if not getpass.getuser() == "root":
@@ -131,7 +131,7 @@ if os.path.isfile(lock_file):
         sys.exit(2) # lock file deletion interrupted; exit with code 2
 
     if verbose:
-        print("Finished deleting lock file!")
+        print("Finished deleting lock file (" + lock_file + ")!")
 
 
 # Ensure lock file was deleted.
