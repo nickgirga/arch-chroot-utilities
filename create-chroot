@@ -70,7 +70,8 @@ for arg in args:
                         print_help() # help
                         sys.exit(0)
                     elif arg == "--verbose":
-                        print("WARNING!: Verbose mode is enabled! Extra information will be given.")
+                        print(  "WARNING!: Verbose mode is enabled!\n" +
+                                "Extra information will be given.")
                         verbose = True # enable verbose mode
                     elif arg == "--force":
                         print(  "WARNING!: Force deletion is enabled!\n" +
@@ -101,7 +102,8 @@ for arg in args:
                             print_help() # help
                             sys.exit(0)
                         elif char == 'v':
-                            print("WARNING!: Verbose mode is enabled! Extra information will be given.")
+                            print(  "WARNING!: Verbose mode is enabled!" +
+                                    "Extra information will be given.")
                             verbose = True # enable verbose mode
                         elif char == 'p':
                             if len(arg) > 2:

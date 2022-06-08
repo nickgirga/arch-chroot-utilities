@@ -26,7 +26,7 @@ def print_help():
 
 
 # Check launch options.
-arg = sys.argv[1:]
+args = sys.argv[1:]
 for arg in args:
     if not path == "":
         print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
@@ -44,7 +44,8 @@ for arg in args:
                         print_help() # help
                         sys.exit(0)
                     elif arg == "--verbose":
-                        print("WARNING!: Verbose mode is enabled! Extra information will be given.")
+                        print(  "WARNING!: Verbose mode is enabled!\n" +
+                                "Extra information will be given.")
                         verbose = True # enable verbose mode
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
