@@ -62,7 +62,7 @@ for arg in args:
                                     "Extra information will be given.")
                             verbose = True # enable verbose mode
                         else:
-                            print(  "ERROR!: Invalid option (-" + char + "!\n" +
+                            print(  "ERROR!: Invalid option (-" + char + ")!\n" +
                                     "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                             sys.exit(9) # invalid option; exit with code 9
             else:
