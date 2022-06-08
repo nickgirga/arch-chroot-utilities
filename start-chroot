@@ -101,7 +101,8 @@ if not (is_file or is_dir):
 
 
 # Mount filesystem.
-print("Mounting the filesystem (" + path + ")...")
+if verbose:
+    print("Mounting the filesystem (" + path + ")...")
 mount_cmd = ["mount", "--bind", path, path]
 if not getpass.getuser() == "root":
     mount_cmd.insert(0, "sudo") # elevate privileges if needed
@@ -119,22 +120,24 @@ if subprocess.run(["mountpoint", "-q", path], capture_output = not verbose).retu
             "Try manually mounting using `mount`.\n" +
             "Use `mount --help` or `man mount` for more information.", ' ', '\n', file = sys.sdterr)
     sys.exit(3) # mount failed; exit with code 3
-print("Finished mounting filesystem (" + path + ")!")
+if verbose:
+    print("Finished mounting filesystem (" + path + ")!\n")
 
 
 # Start chroot using `arch-chroot`.
-print("\nStarting Arch Linux chroot...")
+print("Starting Arch Linux chroot" + ((" (" + path + ")...") if verbose else "..."))
 chroot_cmd = ["arch-chroot", path]
 if not getpass.getuser() == "root":
     chroot_cmd.insert(0, "sudo") # elevate privileges if needed
 output = subprocess.run(chroot_cmd)
-if output.returncode != 0:
+if output.returncode != 0 and output.returncode != 1:
     print("WARNING!: Chroot returned with a non-zero error code (" + str(output.returncode) + ")!")
-print("Arch Linux chroot exited!")
+print("Arch Linux chroot exited" + ((" (" + path + ")!") if verbose else "!\n\nDone!"))
 
 
 # Unmount filesystem after chroot has exited.
-print("\nUnmounting the filesystem (" + path + ")...")
+if verbose:
+    print("\nUnmounting the filesystem (" + path + ")...")
 unmount_cmd = ["umount", path]
 if not getpass.getuser() == "root":
     unmount_cmd.insert(0, "sudo") # elevate privileges if needed
@@ -153,4 +156,5 @@ if subprocess.run(["mountpoint", "-q", path], capture_output = not verbose).retu
             "Try manually unmounting using `umount`.\n" +
             "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.sdterr)
     sys.exit(5) # unmount failed; exit with code 5
-print("Finished unmounting filesystem (" + path + ")!\n\nDone!")
+if verbose:
+    print("Finished unmounting filesystem (" + path + ")!\n\nDone!")

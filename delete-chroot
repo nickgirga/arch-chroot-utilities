@@ -13,7 +13,7 @@ import getpass, os, subprocess, sys
 path = "./arch-fs"
 
 
-verbose = True
+verbose = False
 
 
 # Check for script dependencies.
@@ -38,7 +38,8 @@ lock_file_existed = False
 if os.path.isfile(lock_file):
     lock_file_existed = True
 
-    print("Deleting lock file...")
+    if verbose:
+        print("Deleting lock file...")
 
     lock_file_rm_cmd = ["rm", "-f", lock_file]
     if not getpass.getuser() == "root":
@@ -51,7 +52,8 @@ if os.path.isfile(lock_file):
                 "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
         sys.exit(2) # lock file deletion interrupted; exit with code 2
 
-    print("Finished deleting lock file!")
+    if verbose:
+        print("Finished deleting lock file!")
 
 
 # Ensure lock file was deleted.
@@ -70,23 +72,29 @@ else:
     listdir_results = os.listdir(real_path)
     child_index = 0
     for child in listdir_results:
-        os.system("clear")
+        if not verbose:
+            os.system("clear")
 
-        print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
+        print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(child_index) + "/" + str(len(listdir_results)) + "]")
 
         filesystem_rm_cmd = ["rm", "-rf", real_path + "/" + child]
         if not getpass.getuser() == "root":
             filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
 
         try:
+            if verbose:
+                print("Deleting child of directory at path (" + child + ", " + real_path + ")!")
             subprocess.run(filesystem_rm_cmd, capture_output = not verbose)
         except Exception as e:
             print(  str(e) + "\nERROR!: Something happened while trying to delete part of the Arch Linux chroot filesystem (" + child + ", " + real_path + ")!\n" +
                     "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
             sys.exit(5) # deletion of part of the chroot filesystem was interrupted; exit with code 5
+        
+        child_index += 1
 
-    os.system("clear")
-    print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(len(listdir_results) + 1) + "/" + str(len(listdir_results) + 1) + "]")
+    if not verbose:
+        os.system("clear")
+    print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(len(listdir_results)) + "/" + str(len(listdir_results)) + "]")
 
     filesystem_rm_cmd = ["rm", "-rf", real_path]
     if not getpass.getuser() == "root":
@@ -108,5 +116,6 @@ if os.path.isdir(real_path):
     sys.exit(7) # failed to delete chroot filesystem; exit with code 7
 
 
-os.system("clear")
-print("Finished deleting Arch Linux chroot filesystem!")
+if not verbose:
+    os.system("clear")
+print("Finished deleting Arch Linux chroot filesystem (" + real_path + ")!\n\nDone!")
