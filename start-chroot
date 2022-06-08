@@ -20,8 +20,9 @@ verbose = False
 def print_help():
     print("\nUsage: `start-chroot [options...] [path]`")
     print("\nOptions:")
+    print("  -h, --help\t\tPrints help text.")
     print("  -v, --verbose\t\tEnable verbose mode.")
-
+    print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
 
 # Check launch options.
 args = sys.argv[1:]

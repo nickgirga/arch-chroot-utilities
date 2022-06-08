@@ -39,8 +39,11 @@ def print_help():
     print("  --force\t\tOverwrites files and directories at [path].")
     print("  -p=[packages]\t\tInstalls [packages] to the chroot.")
     print("  --packages=[packages]\t(Does the same as `-p`).")
-    print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.")
-
+    print("\nPackages should be between quotation marks, separated by space.")
+    print("For example: `-p=\"linux bash coreutils\"`")
+    print("If packages are left undefined, the default set of packages will be used.")
+    print("Default packages: [ " + ", ".join(DEFAULT_PACKAGES.split(' ')) + " ]")
+    print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
 
 # Check for script dependencies.
 depchecker.check_dependencies({
