@@ -1,39 +1,96 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 # File: delete-chroot
 # Author: Nicholas Girga
 # Purpose: Delete a filesystem created by `create-chroot`.
 
-# do not allow user to delete mounted directories
-mountpoint -q ./arch-fs && { echo ERROR\!: Chroot is mounted.; echo If you are positive it is no longer in use, unmount using the \`umount\` command.; echo Type \`man umount\` and press ENTER for more information.; exit; }
 
-# delete lock file
-echo Deleting lock file...
-[ -f ./arch-fs.lock ] && sudo rm -f ./arch-fs.lock || echo WARNING!: Lock file does not exist!
-echo Finished deleting lock file!
-echo
+# Imports
+import depchecker.depchecker as depchecker
+import os, subprocess, sys
 
-# check if filesystem directory exists
-if ! [ -d ./arch-fs ];
-then
-	echo ERROR!: The root filesystem for the Arch Linux chroot does not exist. 
-	echo Use \`./create-chroot\` to create a new root filesystem for the Arch Linux chroot.
-	exit
-fi
 
-# delete filesystem
-echo Deleting root filesystem for Arch Linux chroot...
-echo
-for child in ./arch-fs/*;
-do
-	echo "    Deleting \"$child\"..."
-	sudo rm -rf $child
-	echo "    Finished deleting \"$child\"!"
-	echo
-done
-echo "    Deleting \"./arch-fs\"..."
-sudo rm -rf ./arch-fs
-echo "    Finished deleting \"./arch-fs\"!"
-echo
-echo Finished deleting root filesystem for Arch Linux chroot!
-echo
-echo Done!
+# The path to the filesystem to delete.
+path = "./arch-fs"
+
+
+# Check for script dependencies.
+depchecker.check_dependencies({
+    "mountpoint": { depchecker.SystemInfo.DEFAULT: "util-linux" } # check for `mountpoint`
+})
+
+
+# Do not allow user to delete mounted directories.
+real_path = os.path.realpath(path)
+if subprocess.run(["mountpoint", "-q", real_path]).returncode == 0:
+    print(  "ERROR!: Filesystem is mounted!\n" +
+            "If you are positive it is no longer in use, unmount it using `umount`.\n" +
+            "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.stderr)
+    sys.exit(1) # filesystem mounted; exit with code 1
+
+
+# Delete lock file.
+lock_file = real_path + ".lock"
+lock_file_existed = False
+if os.path.isfile(lock_file):
+    lock_file_existed = True
+
+    print("Deleting lock file...")
+
+    try:
+        pass
+    except Exception as e:
+        print(  str(e) + "\nERROR!: Something happened while trying to delete the lock file (" + lock_file + ")!\n" +
+                "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
+        sys.exit(2) # lock file deletion interrupted; exit with code 2
+
+    print("Finished deleting lock file!")
+
+
+# Ensure lock file was deleted.
+if lock_file_existed and os.path.isfile(lock_file):
+    print(  "ERROR!: Failed to delete the lock file (" + lock_file + ")!\n" +
+            "Try manually deleting the file using `rm`.\n" +
+            "Use `rm --help` or `man rm` for more information.", ' ', '\n', file = sys.stderr)
+    sys.exit(3) # failed to delete lock file; exit with code 2
+
+
+# Delete chroot filesystem.
+if not os.path.isdir(real_path):
+    print("ERROR!: The root filesystem for the Arch Linux chroot does not exist!")
+    sys.exit(4) # filesystem does not exist; exit with code 4
+else:
+    listdir_results = os.listdir(real_path)
+    child_index = 0
+    for child in listdir_results:
+        os.system("clear")
+
+        print("Deleting Arch Linux chroot filesystem... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
+
+        try:
+            pass
+        except Exception as e:
+            print(  str(e) + "\nERROR!: Something happened while trying to delete part of the Arch Linux chroot filesystem (" + child + ")!\n" +
+                    "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
+            sys.exit(5) # deletion of part of the chroot filesystem was interrupted; exit with code 5
+
+    os.system("clear")
+    print("Deleting Arch Linux chroot filesystem ... [" + str(len(listdir_results) + 1) + "/" + str(len(listdir_results) + 1) + "]")
+
+    try:
+        pass
+    except Exception as e:
+        print(  str(e) + "\nERROR!: Something happened while trying to delete the root directory of the Arch Linux chroot filesystem!\n" +
+                "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
+        sys.exit(6) # deletion of the root directory of the chroot filesystem was interrupted; exit with code 6
+
+
+# Ensure chroot filesystem was deleted.
+if os.path.isdir(real_path):
+    print(  "ERROR!: Failed to delete the Arch Linux chroot filesystem!\n" +
+            "Try manually deleting the directory using `rm`.\n" +
+            "Use `rm --help` or `man rm` for more information.", ' ', '\n', file = sys.stderr)
+    sys.exit(7) # failed to delete chroot filesystem; exit with code 7
+
+
+os.system("clear")
+print("Finished deleting Arch Linux chroot filesystem!")
