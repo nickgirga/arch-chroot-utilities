@@ -74,7 +74,7 @@ else:
 
         print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
 
-        filesystem_rm_cmd = ["rm", "-rf", child]
+        filesystem_rm_cmd = ["rm", "-rf", real_path + "/" + child]
         if not getpass.getuser() == "root":
             filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
 
@@ -88,7 +88,7 @@ else:
     os.system("clear")
     print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(len(listdir_results) + 1) + "/" + str(len(listdir_results) + 1) + "]")
 
-    filesystem_rm_cmd = ["rm", "rf", real_path]
+    filesystem_rm_cmd = ["rm", "-rf", real_path]
     if not getpass.getuser() == "root":
         filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
 
