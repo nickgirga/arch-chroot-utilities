@@ -6,22 +6,26 @@
 
 # Imports
 import depchecker.depchecker as depchecker
-import os, subprocess, sys
+import getpass, os, subprocess, sys
 
 
 # The path to the filesystem to delete.
 path = "./arch-fs"
 
 
+verbose = False
+
+
 # Check for script dependencies.
 depchecker.check_dependencies({
-    "mountpoint": { depchecker.SystemInfo.DEFAULT: "util-linux" } # check for `mountpoint`
+    "mountpoint": { depchecker.SystemInfo.DEFAULT: "util-linux" },  # check for `mountpoint`
+    "sudo": { depchecker.SystemInfo.DEFAULT: "sudo" }               # check for `sudo`
 })
 
 
 # Do not allow user to delete mounted directories.
 real_path = os.path.realpath(path)
-if subprocess.run(["mountpoint", "-q", real_path]).returncode == 0:
+if subprocess.run(["mountpoint", "-q", real_path], capture_output = not verbose).returncode == 0:
     print(  "ERROR!: Filesystem is mounted!\n" +
             "If you are positive it is no longer in use, unmount it using `umount`.\n" +
             "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.stderr)
@@ -36,8 +40,12 @@ if os.path.isfile(lock_file):
 
     print("Deleting lock file...")
 
+    lock_file_rm_cmd = ["rm", "-f", lock_file]
+    if not getpass.getuser() == "root":
+        lock_file_rm_cmd.insert(0, "sudo") # elevate privileges if needed
+
     try:
-        pass
+        subprocess.run(lock_file_rm_cmd, capture_output = not verbose)
     except Exception as e:
         print(  str(e) + "\nERROR!: Something happened while trying to delete the lock file (" + lock_file + ")!\n" +
                 "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
@@ -66,8 +74,12 @@ else:
 
         print("Deleting Arch Linux chroot filesystem... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
 
+        filesystem_rm_cmd = ["rm", "-rf", child]
+        if not getpass.getuser() == "root":
+            filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
+
         try:
-            pass
+            filesystem_rm_cmd
         except Exception as e:
             print(  str(e) + "\nERROR!: Something happened while trying to delete part of the Arch Linux chroot filesystem (" + child + ")!\n" +
                     "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
