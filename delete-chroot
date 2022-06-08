@@ -10,17 +10,85 @@ import getpass, os, subprocess, sys
 
 
 # The path to the filesystem to delete.
-path = "./arch-fs"
+path = ""
 
 
 verbose = False
+
+
+# Prints help text.
+def print_help():
+    print("\nUsage: `delete-chroot [options...] [path]`")
+    print("\nOptions [options...]:")
+    print("  -h, --help\t\tPrints help text.")
+    print("  -v, --verbose\t\tEnables verbose mode.")
+    print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
+
+
+# Check launch options.
+arg = sys.argv[1:]
+for arg in args:
+    if not path == "":
+        print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                "Options must come before path.\n" +
+                "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
+        sys.exit(8) # path before arguments; exit with code 8
+
+    if len(arg) > 0:
+        if arg[0] == '-':
+            # is an option
+            if len(arg) > 1:
+                if arg[1] == '-':
+                    # is double dash (word) option (e.g. `--help`)
+                    if arg == "--help":
+                        print_help() # help
+                        sys.exit(0)
+                    elif arg == "--verbose":
+                        print("WARNING!: Verbose mode is enabled! Extra information will be given.")
+                        verbose = True # enable verbose mode
+                    else:
+                        print(  "ERROR!: Invalid option (" + arg + ")!\n" +
+                                "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
+                        sys.exit(9) # invalid option; exit with code 9
+                else:
+                    # is a single dash/char option (e.g. `-v`)
+                    for char in arg[1:]:
+                        if char == 'h':
+                            print_help() # help
+                            sys.exit(0)
+                        elif char == 'v':
+                            print(  "WARNING!: Verbose mode is enabled!\n" +
+                                    "Extra information will be given.")
+                            verbose = True # enable verbose mode
+                        else:
+                            print(  "ERROR!: Invalid option (-" + char + "!\n" +
+                                    "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
+                            sys.exit(9) # invalid option; exit with code 9
+            else:
+                print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
+                        "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
+                sys.exit(10) # invalid syntax (-); exit with code 10
+        else:
+            # is a path
+            path = arg
+    else:
+        print("ERROR!: Option has invalid character length (" + arg + ")!", ' ', '\n', file = sys.stderr)
+        sys.exit(10) # invalid launch option character length; exit with code 10
 
 
 # Check for script dependencies.
 depchecker.check_dependencies({
     "mountpoint": { depchecker.SystemInfo.DEFAULT: "util-linux" },  # check for `mountpoint`
     "sudo": { depchecker.SystemInfo.DEFAULT: "sudo" }               # check for `sudo`
-})
+}, verbose)
+
+
+# Set default path if needed.
+if path == "":
+    new_path = os.getcwd() + "/arch-fs"
+    if verbose:
+        print("WARNING!: No path specified! Using default path (" + new_path + ")!")
+    path = new_path 
 
 
 # Do not allow user to delete mounted directories.
