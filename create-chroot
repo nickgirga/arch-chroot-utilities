@@ -54,7 +54,7 @@ for arg in args:
     if not path == "":
         print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                 "Options must come before path.\n" +
-                "Use `create-chroot --help` for more information.")
+                "Use `create-chroot --help` for more information.", ' ', '\n', file=sys.stderr)
         sys.exit(6) # path before arguments; exit with code 6
 
     if len(arg) > 0:
@@ -80,16 +80,16 @@ for arg in args:
                             else:
                                 print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                                         "Expected \"=\", but got \"" + arg[10] + "\"!\n" +
-                                        "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                        "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                                 sys.exit(7) # invalid package syntax; exit with code 7
                         else:
                             print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                                     "The `--packages` option expects a variable.\n" +
-                                    "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                    "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                             sys.exit(7) # invalid package syntax; exit with code 7
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
-                                "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                         sys.exit(1) # invalid option; exit with code 1
                 else:
                     # is single dash/char option (e.g. `-v`)
@@ -108,26 +108,26 @@ for arg in args:
                                 else:
                                     print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                                             "Expected \"=\", but got \"" + arg[2] + "\"!\n" +
-                                            "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                            "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                                     sys.exit(7) # invalid package syntax; exit with code 7
                             else:
                                 print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
                                         "The `-p` option expects a variable.\n" +
-                                        "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                        "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                                 sys.exit(7) # invalid package syntax; exit with code 7
                         else:
                             print(  "ERROR!: Invalid option (-" + char + ")!\n" +
-                                    "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                                    "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                             sys.exit(1) # invalid option; exit with code 1
             else:
                 print(  "ERROR!: Invalid syntax (" + arg + ")!\n" +
-                        "Use `create-chroot --help` for more information.", ' ', '\n', sys.stderr)
+                        "Use `create-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
                 sys.exit(2) # invalid syntax (-); exit with code 2
         else:
             # is a path
             path = arg
     else:
-        print("ERROR!: Option has invalid character length (" + arg + ")!", ' ', '\n', sys.stderr)
+        print("ERROR!: Option has invalid character length (" + arg + ")!", ' ', '\n', file = sys.stderr)
         sys.exit(3) # invalid launch option character length; exit with code 3
 
 
