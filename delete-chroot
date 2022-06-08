@@ -13,7 +13,7 @@ import getpass, os, subprocess, sys
 path = "./arch-fs"
 
 
-verbose = False
+verbose = True
 
 
 # Check for script dependencies.
@@ -64,7 +64,7 @@ if lock_file_existed and os.path.isfile(lock_file):
 
 # Delete chroot filesystem.
 if not os.path.isdir(real_path):
-    print("ERROR!: The root filesystem for the Arch Linux chroot does not exist!")
+    print("ERROR!: The root filesystem for the Arch Linux chroot does not exist at the path (" + real_path + ")!")
     sys.exit(4) # filesystem does not exist; exit with code 4
 else:
     listdir_results = os.listdir(real_path)
@@ -72,33 +72,37 @@ else:
     for child in listdir_results:
         os.system("clear")
 
-        print("Deleting Arch Linux chroot filesystem... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
+        print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(child_index) + "/" + str(len(listdir_results) + 1) + "]")
 
         filesystem_rm_cmd = ["rm", "-rf", child]
         if not getpass.getuser() == "root":
             filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
 
         try:
-            filesystem_rm_cmd
+            subprocess.run(filesystem_rm_cmd, capture_output = not verbose)
         except Exception as e:
-            print(  str(e) + "\nERROR!: Something happened while trying to delete part of the Arch Linux chroot filesystem (" + child + ")!\n" +
+            print(  str(e) + "\nERROR!: Something happened while trying to delete part of the Arch Linux chroot filesystem (" + child + ", " + real_path + ")!\n" +
                     "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
             sys.exit(5) # deletion of part of the chroot filesystem was interrupted; exit with code 5
 
     os.system("clear")
-    print("Deleting Arch Linux chroot filesystem ... [" + str(len(listdir_results) + 1) + "/" + str(len(listdir_results) + 1) + "]")
+    print("Deleting Arch Linux chroot filesystem (" + real_path + ")... [" + str(len(listdir_results) + 1) + "/" + str(len(listdir_results) + 1) + "]")
+
+    filesystem_rm_cmd = ["rm", "rf", real_path]
+    if not getpass.getuser() == "root":
+        filesystem_rm_cmd.insert(0, "sudo") # elevate privileges if needed
 
     try:
-        pass
+        subprocess.run(filesystem_rm_cmd, capture_output = not verbose)
     except Exception as e:
-        print(  str(e) + "\nERROR!: Something happened while trying to delete the root directory of the Arch Linux chroot filesystem!\n" +
+        print(  str(e) + "\nERROR!: Something happened while trying to delete the root directory of the Arch Linux chroot filesystem (" + real_path + ")!\n" +
                 "Try using the `-v` option for more information.", ' ', '\n', file = sys.stderr)
         sys.exit(6) # deletion of the root directory of the chroot filesystem was interrupted; exit with code 6
 
 
 # Ensure chroot filesystem was deleted.
 if os.path.isdir(real_path):
-    print(  "ERROR!: Failed to delete the Arch Linux chroot filesystem!\n" +
+    print(  "ERROR!: Failed to delete the Arch Linux chroot filesystem (" + real_path + ")!\n" +
             "Try manually deleting the directory using `rm`.\n" +
             "Use `rm --help` or `man rm` for more information.", ' ', '\n', file = sys.stderr)
     sys.exit(7) # failed to delete chroot filesystem; exit with code 7
