@@ -138,10 +138,12 @@ for arg in args:
 
 # Set default path if needed.
 if path == "":
-    new_path = os.getcwd() + "/arch-fs"
+    new_path = os.path.realpath(os.getcwd() + "/arch-fs")
     if verbose:
         print("WARNING!: No path specified! Using default path (" + new_path + ")!")
     path = new_path
+else:
+    path = os.path.realpath(path) # get full path
 
 # Print current path (verbose).
 if verbose:
