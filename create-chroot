@@ -45,7 +45,7 @@ def print_help():
     print("\nPackages should be between quotation marks, separated by space.")
     print("For example: `-p=\"linux bash coreutils\"`")
     print("If packages are left undefined, the default set of packages will be used.")
-    print("Default packages: [ " + ", ".join(DEFAULT_PACKAGES.split(' ')) + " ]")
+    print("Default packages: \"" + DEFAULT_PACKAGES + "\"")
     print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
 
 
