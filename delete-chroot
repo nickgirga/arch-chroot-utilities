@@ -113,6 +113,12 @@ if not os.path.isfile(id_file):
     sys.exit(11) # chroot id file does not exits; exit with code 11
 
 
+# Prevent deletion of host root filesystem.
+if path == "/":
+    print("ERROR!: Cannot delete host's root directory!", ' ', '\n', file = sys.stderr)
+    sys.exit(12) # path is root directory; exit with code 12
+
+
 response = input("Are you sure you want to delete \"" + path + "\" and its children? [y/N] > ")
 if response.lower() != 'y':
     print("(No) Quitting...")
