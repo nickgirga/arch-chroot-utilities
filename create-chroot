@@ -193,7 +193,7 @@ if is_file or is_dir:
         print("Deleting " + ("file" if is_file else "directory") + " at path (" + path + ")...")
     
     try:
-        subprocess.run(["./delete-chroot", path], capture_output = not verbose) # overwrite
+        subprocess.run(["./delete-chroot", path]) # overwrite
     except Exception as e:
         print(str(e) + "\nERROR!: Something happened while trying to delete the Arch Linux chroot filesystem!")
         sys.exit(5) # failed to delete chroot filesystem; exit with code 5
