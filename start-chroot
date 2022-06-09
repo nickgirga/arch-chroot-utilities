@@ -12,6 +12,7 @@ import getpass, os, subprocess, sys
 # The path to the chroot filesystem.
 path = ""
 
+
 # If extra information should be printed.
 verbose = False
 
@@ -23,6 +24,15 @@ def print_help():
     print("  -h, --help\t\tPrints help text.")
     print("  -v, --verbose\t\tEnable verbose mode.")
     print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
+
+
+# Prints version text.
+def print_version():
+    print("\nArch Chroot Utilities (start-chroot)")
+    print("by Nicholas Girga")
+    print("Released under the MIT license with ABSOLUTELY NO WARRANTY")
+    print("\nVersion 1.1\n")
+
 
 # Check launch options.
 args = sys.argv[1:]
@@ -46,6 +56,9 @@ for arg in args:
                         print(  "WARNING!: Verbose mode is enabled!\n" +
                                 "Extra information will be given.")
                         verbose = True # enable verbose mode
+                    elif arg == "--version":
+                        print_version()
+                        sys.exit(0)
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
                                 "Use `start-chroot --help` for more information.", ' ', '\n', file = sys.stderr)

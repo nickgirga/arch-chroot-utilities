@@ -18,13 +18,16 @@ DEFAULT_PACKAGES = "linux bash coreutils sed vi vim perl pacman sudo curl"
 # The path to this chroot.
 path = ""
 
+
 # The packages to install in this chroot.
 # Represented by a string separated by spaces.
 # For example: "linux bash coreutils"
 packages = ""
 
+
 # If extra information should be printed.
 verbose = False
+
 
 # If files and directories at the path should be deleted.
 force_delete = False
@@ -44,6 +47,15 @@ def print_help():
     print("If packages are left undefined, the default set of packages will be used.")
     print("Default packages: [ " + ", ".join(DEFAULT_PACKAGES.split(' ')) + " ]")
     print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
+
+
+# Prints version text.
+def print_version():
+    print("\nArch Chroot Utilities (create-chroot)")
+    print("by Nicholas Girga")
+    print("Released under the MIT license with ABSOLUTELY NO WARRANTY")
+    print("\nVersion 1.1\n")
+
 
 # Check for script dependencies.
 depchecker.check_dependencies({
@@ -73,6 +85,9 @@ for arg in args:
                         print(  "WARNING!: Verbose mode is enabled!\n" +
                                 "Extra information will be given.")
                         verbose = True # enable verbose mode
+                    elif arg == "--version":
+                        print_version()
+                        sys.exit(0)
                     elif arg == "--force":
                         print(  "WARNING!: Force deletion is enabled!\n" +
                                 "Files and directories at the filesystem's path will be overwritten!")
@@ -145,9 +160,11 @@ if path == "":
 else:
     path = os.path.realpath(path) # get full path
 
+
 # Print current path (verbose).
 if verbose:
     print("Path: \"" + path + "\"")
+
 
 # Set default packages if needed.
 if packages == "":

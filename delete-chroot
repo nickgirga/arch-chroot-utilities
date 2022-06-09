@@ -25,6 +25,14 @@ def print_help():
     print("\nIf [path] is left empty, `$PWD/arch-fs` will be used as the path.\n")
 
 
+# Prints version text.
+def print_version():
+    print("\nArch Chroot Utilities (delete-chroot)")
+    print("by Nicholas Girga")
+    print("Released under the MIT license with ABSOLUTELY NO WARRANTY")
+    print("\nVersion 1.1\n")
+
+
 # Check launch options.
 args = sys.argv[1:]
 for arg in args:
@@ -47,6 +55,9 @@ for arg in args:
                         print(  "WARNING!: Verbose mode is enabled!\n" +
                                 "Extra information will be given.")
                         verbose = True # enable verbose mode
+                    elif arg == "--version":
+                        print_version()
+                        sys.exit(0)
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
                                 "Use `delete-chroot --help` for more information.", ' ', '\n', file = sys.stderr)
