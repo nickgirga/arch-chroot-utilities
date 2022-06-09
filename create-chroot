@@ -6,7 +6,7 @@
 
 # Imports
 import depchecker.depchecker as depchecker
-import os, sys, subprocess
+import getpass, os, sys, subprocess
 
 
 # The packages to install in a chroot by default.
@@ -55,6 +55,19 @@ def print_version():
     print("by Nicholas Girga")
     print("Released under the MIT license with ABSOLUTELY NO WARRANTY")
     print("\nVersion 1.1\n")
+
+
+# Creates an empty file at the specified path with root privileges if needed.
+def touch_file(path: str, verbose: bool):
+    write_cmd = ["touch", path]
+    if not getpass.getuser() == "root":
+        write_cmd.insert(0, "sudo")
+
+    try:
+        subprocess.run(write_cmd, capture_output = not verbose)
+    except Exception as e:
+        print(str(e) + "\nERROR!: Something happened while trying to touch file (" + path + ")!", ' ', '\n', file = sys.stderr)
+        sys.exit(8) # touch interrupted; exit with code 8
 
 
 # Check for script dependencies.
@@ -202,15 +215,35 @@ if is_file or is_dir:
         print("Finished deleting " + ("file" if is_file else "directory") + " at path (" + path + ")!")
 
 
-# get package list
+# Get package list.
 package_list = packages.split(' ')
 
 
-# use mkarchroot to create a root filesystem
-print("Creating new Arch Linux root filesystem" + ((" (" + path + ")...") if verbose else "..."))
+# Use mkarchroot to create a chroot filesystem.
+print("Creating new Arch Linux chroot filesystem" + ((" (" + path + ")...") if verbose else "..."))
 
-output = subprocess.run(["mkarchroot", path] + package_list, capture_output = not verbose) # create new arch root filesystem at ./arch-fs
-if output.returncode != 0 and output.returncode != 4:
-    print(  "WARNING!: Returned with non-zero error code (" + str(output.returncode) + ")!\n" +
-            "If problems occur, try recreating the filesystem with the `-v` option for more information.")
-print("Finished creating new Arch Linux root filesystem" + ((" (" + path + ")!") if verbose else "!") + "\n\nDone!\n")
+id_file = path + "/.chroot"
+interrupt_file = path + "/.interrupt"
+try:
+    output = subprocess.run(["mkarchroot", path] + package_list, capture_output = not verbose) # create new arch root filesystem at ./arch-fs
+    if output.returncode != 0 and output.returncode != 4:
+        print(  "WARNING!: Returned with non-zero error code (" + str(output.returncode) + ")!\n" +
+                "If problems occur, try recreating the filesystem with the `-v` option for more information.")
+except KeyboardInterrupt:
+    touch_file(id_file, verbose)
+    touch_file(interrupt_file, verbose)
+    print("(Keyboard interrupt) Quitting...")
+    sys.exit(0) # KeyboardInterrupt; exit with code 0
+except Exception as e:
+    touch_file(id_file, verbose)
+    touch_file(interrupt_file, verbose)
+    print(str(e) + "\nERROR!: Something happened while creating the Arch Linux chroot filesystem (" + path + ")!")
+    sys.exit(9) # `mkarchroot` interrupted; exit with code 9
+
+
+# Create id file after success.
+touch_file(id_file, verbose)
+
+
+# Print finish text.
+print("Finished creating new Arch Linux chroot filesystem" + ((" (" + path + ")!") if verbose else "!") + "\n\nDone!\n")

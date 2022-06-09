@@ -105,6 +105,14 @@ else:
     path = os.path.realpath(path) # get full path
 
 
+# Check if chroot filesystem.
+id_file = path + "/.chroot"
+if not os.path.isfile(id_file):
+    print(  "ERROR!: Missing \".chroot\" file.\n" +
+            "The specified path does not appear to be a chroot filesystem (" + path + ").", ' ', '\n', file = sys.stderr)
+    sys.exit(11) # chroot id file does not exits; exit with code 11
+
+
 response = input("Are you sure you want to delete \"" + path + "\" and its children? [y/N] > ")
 if response.lower() != 'y':
     print("(No) Quitting...")

@@ -118,6 +118,22 @@ if not (is_file or is_dir):
     sys.exit(1) # no file/directory at path; exit with code 1
 
 
+# Check if chroot filesystem.
+id_file = path + "/.chroot"
+if not os.path.isfile(id_file):
+    print(  "ERROR!: Missing \".chroot\" file.\n" +
+            "The specified path does not appear to be a chroot filesystem.", ' ', '\n', file = sys.stderr)
+    sys.exit(10) # chroot id file does not exist; exit with code 10
+
+
+# Check if filesystem valid.
+interrupt_file = path + "/.interrupt"
+if os.path.isfile(interrupt_file):
+    print(  "ERROR!: The specified chroot filesystem did not complete its setup process.\n" +
+            "Please delete it with `delete-chroot`, as it is not safe to use.", ' ', '\n', file = sys.stderr)
+    sys.exit(11) # interrupt file exists; exit with code 11
+
+
 # Mount filesystem.
 if verbose:
     print("Mounting the filesystem (" + path + ")...")
