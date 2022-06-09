@@ -1,6 +1,8 @@
 # Arch Chroot Utilities
 A collection of scripts that make it simple to setup, enter, and delete an Arch Linux chroot. Requires an Arch Linux host system.
 
+***These scripts have extremely destructive capabilities (e.g. `sudo rm -rf [path]`). Root permissions are required by both `mkarchroot` while creating the filesystem and `rm` when removing it. Be VERY attentive when running these scripts and read every prompt extremely carefully. Failing to do so can result in damage to the host system. Use these scripts at your own risk.***
+
 # Obtaining
 You can download the latest main branch on GitLab as a compressed archive ([zip](https://gitlab.com/nickgirga/acu/-/archive/main/acu-main.zip)|[tag.gz](https://gitlab.com/nickgirga/acu/-/archive/main/acu-main.tar.gz)|[tar.bz2](https://gitlab.com/nickgirga/acu/-/archive/main/acu-main.tar.bz2)|[tar](https://gitlab.com/nickgirga/acu/-/archive/main/acu-main.tar)) or you can find versioned releases as compressed archives on the [releases](https://gitlab.com/nickgirga/acu/-/releases) page. If you plan on using the main branch, I personally would recommend just using git to clone the repository: `git clone https://gitlab.com/nickgirga/acu.git arch-chroot-utilities`.
 
