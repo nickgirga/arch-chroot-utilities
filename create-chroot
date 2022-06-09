@@ -210,7 +210,7 @@ package_list = packages.split(' ')
 print("Creating new Arch Linux root filesystem" + ((" (" + path + ")...") if verbose else "..."))
 
 output = subprocess.run(["mkarchroot", path] + package_list, capture_output = not verbose) # create new arch root filesystem at ./arch-fs
-if output.returncode != 0:
+if output.returncode != 0 and output.returncode != 4:
     print(  "WARNING!: Returned with non-zero error code (" + str(output.returncode) + ")!\n" +
             "If problems occur, try recreating the filesystem with the `-v` option for more information.")
 print("Finished creating new Arch Linux root filesystem" + ((" (" + path + ")!") if verbose else "!") + "\n\nDone!\n")
