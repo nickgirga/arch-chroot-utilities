@@ -86,7 +86,7 @@ for arg in args:
                                 "Extra information will be given.")
                         verbose = True # enable verbose mode
                     elif arg == "--version":
-                        print_version()
+                        print_version() # version
                         sys.exit(0)
                     elif arg == "--force":
                         print(  "WARNING!: Force deletion is enabled!\n" +

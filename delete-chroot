@@ -56,7 +56,7 @@ for arg in args:
                                 "Extra information will be given.")
                         verbose = True # enable verbose mode
                     elif arg == "--version":
-                        print_version()
+                        print_version() # version
                         sys.exit(0)
                     else:
                         print(  "ERROR!: Invalid option (" + arg + ")!\n" +
