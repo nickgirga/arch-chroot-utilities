@@ -128,7 +128,7 @@ try:
     subprocess.run(mount_cmd, capture_output = not verbose)
 except Exception as e:
     print(  str(e) + "\nERROR!: Something happened while trying to mount the filesystem (" + path + ")!\n" +
-            "Try using the `-v` option to see more information.", ' ', '\n', file = sys.sdterr)
+            "Try using the `-v` option to see more information.", ' ', '\n', file = sys.stderr)
     sys.exit(2) # mount was interrupted; exit with code 2
 
 
@@ -136,7 +136,7 @@ except Exception as e:
 if subprocess.run(["mountpoint", "-q", path], capture_output = not verbose).returncode != 0:
     print(  "ERROR!: Filesystem was not mounted (" + path + ")!\n" +
             "Try manually mounting using `mount`.\n" +
-            "Use `mount --help` or `man mount` for more information.", ' ', '\n', file = sys.sdterr)
+            "Use `mount --help` or `man mount` for more information.", ' ', '\n', file = sys.stderr)
     sys.exit(3) # mount failed; exit with code 3
 if verbose:
     print("Finished mounting filesystem (" + path + ")!\n")
@@ -164,7 +164,7 @@ try:
 except Exception as e:
     print(str(e) + "\nERROR!: Something happened while trying to unmount the filesystem (" + path + ")!\n" +
             "Try manually unmounting using `umount`.\n" +
-            "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.sdterr)
+            "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.stderr)
     sys.exit(4) # unmount was interrupted; exit with code 4
 
 
@@ -172,7 +172,7 @@ except Exception as e:
 if subprocess.run(["mountpoint", "-q", path], capture_output = not verbose).returncode == 0:
     print(  "ERROR!: Filesystem was not unmounted (" + path + ")!\n" +
             "Try manually unmounting using `umount`.\n" +
-            "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.sdterr)
+            "Use `umount --help` or `man umount` for more information.", ' ', '\n', file = sys.stderr)
     sys.exit(5) # unmount failed; exit with code 5
 if verbose:
     print("Finished unmounting filesystem (" + path + ")!\n\nDone!")
