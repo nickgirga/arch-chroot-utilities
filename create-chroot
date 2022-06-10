@@ -70,12 +70,6 @@ def touch_file(path: str, verbose: bool):
         sys.exit(8) # touch interrupted; exit with code 8
 
 
-# Check for script dependencies.
-depchecker.check_dependencies({
-    "mkarchroot": { depchecker.SystemInfo.ARCH_LINUX: "devtools" } # check for `mkarchroot`
-}, verbose)
-
-
 # Check launch options.
 args = sys.argv[1:]
 for arg in args:
@@ -162,6 +156,12 @@ for arg in args:
     else:
         print("ERROR!: Option has invalid character length (" + arg + ")!", ' ', '\n', file = sys.stderr)
         sys.exit(3) # invalid launch option character length; exit with code 3
+
+
+# Check for script dependencies.
+depchecker.check_dependencies({
+    "mkarchroot": { depchecker.SystemInfo.ARCH_LINUX: "devtools" } # check for `mkarchroot`
+}, verbose)
 
 
 # Set default path if needed.
