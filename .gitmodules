@@ -1,0 +1,3 @@
+[submodule "depchecker"]
+	path = depchecker
+	url = https://gitlab.com/nickgirga/depchecker.git
